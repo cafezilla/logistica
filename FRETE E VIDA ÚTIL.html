@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo de Frete x Faturado</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: #333;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+            margin: 20px auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #007BFF;
+        }
+        label {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            display: block;
+            font-weight: bold;
+        }
+        input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s;
+            box-sizing: border-box;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1em;
+            text-align: center;
+            font-weight: bold;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        nav {
+            background: #007BFF;
+            padding: 10px;
+            color: white;
+            display: flex;
+            justify-content: center;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="#frete" onclick="mostrarSeção('frete-container')">Frete x Faturado</a>
+        <a href="#vida-util" onclick="mostrarSeção('vida-util-container')">Vida Útil do Produto</a>
+    </nav>
+
+    <div id="frete-container" class="container">
+        <h1>Cálculo de Frete x Faturado</h1>
+        <form id="calculo-form">
+            <label for="frete">Valor do Frete (R$):</label>
+            <input type="text" id="frete" placeholder="Digite o valor do frete" required>
+
+            <label for="valorTotal">Valor Total da NF (R$):</label>
+            <input type="text" id="valorTotal" placeholder="Digite o valor total da NF" required>
+
+            <button type="button" onclick="calcularPercentual()">Calcular</button>
+        </form>
+        <div class="result" id="resultado"></div>
+    </div>
+
+    <div id="vida-util-container" class="container hidden">
+        <h1>Vida Útil do Produto</h1>
+        <form id="vida-util-form">
+            <label for="dataFabricacao">Data de Fabricação:</label>
+            <input type="date" id="dataFabricacao" required>
+
+            <label for="dataVencimento">Data de Vencimento:</label>
+            <input type="date" id="dataVencimento" required>
+
+            <button type="button" onclick="calcularVidaUtil()">Calcular</button>
+        </form>
+        <div class="result" id="resultado-vida-util"></div>
+    </div>
+
+    <script>
+        function formatarNumero(valor) {
+            return valor.replace(/\D/g, '')
+                        .replace(/(\d)(\d{2})$/, '$1,$2')
+                        .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        function removerFormatacao(valor) {
+            return parseFloat(valor.replace(/\./g, '').replace(/,/g, '.')) || 0;
+        }
+
+        document.getElementById('frete').addEventListener('input', function() {
+            this.value = formatarNumero(this.value);
+        });
+
+        document.getElementById('valorTotal').addEventListener('input', function() {
+            this.value = formatarNumero(this.value);
+        });
+
+        function calcularPercentual() {
+            const frete = removerFormatacao(document.getElementById('frete').value);
+            const valorTotal = removerFormatacao(document.getElementById('valorTotal').value);
+
+            if (valorTotal === 0) {
+                document.getElementById('resultado').textContent = 'Por favor, insira valores válidos!';
+                return;
+            }
+
+            const percentual = (frete / valorTotal) * 100;
+            document.getElementById('resultado').textContent = `Percentual do Frete: ${percentual.toFixed(2).replace('.', ',')}%`;
+        }
+
+        function calcularVidaUtil() {
+            const dataFabricacao = new Date(document.getElementById('dataFabricacao').value);
+            const dataVencimento = new Date(document.getElementById('dataVencimento').value);
+            const dataAtual = new Date();
+
+            if (isNaN(dataFabricacao) || isNaN(dataVencimento) || dataFabricacao >= dataVencimento) {
+                document.getElementById('resultado-vida-util').textContent = 'Por favor, insira datas válidas!';
+                return;
+            }
+
+            const totalDias = (dataVencimento - dataFabricacao) / (1000 * 60 * 60 * 24);
+            const diasRestantes = (dataVencimento - dataAtual) / (1000 * 60 * 60 * 24);
+            const percentualVidaUtil = (diasRestantes / totalDias) * 100;
+
+            const resultado = `Percentual de Vida Útil: ${percentualVidaUtil.toFixed(2).replace('.', ',')}%<br>` +
+                              `Dias Restantes para Vencimento: ${Math.max(0, Math.ceil(diasRestantes))} dias`;
+
+            document.getElementById('resultado-vida-util').innerHTML = resultado;
+        }
+
+        function mostrarSeção(id) {
+            document.querySelectorAll('.container').forEach(container => {
+                container.classList.add('hidden');
+            });
+            document.getElementById(id).classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
