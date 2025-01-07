@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cálculo de Frete x Faturado</title>
+    <title>Cálculos Diversos</title>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -75,15 +75,21 @@
             color: white;
             display: flex;
             justify-content: center;
+            gap: 20px;
         }
-        nav a {
+        nav button {
+            background: none;
+            border: none;
             color: white;
-            text-decoration: none;
-            margin: 0 15px;
+            font-size: 1em;
             font-weight: bold;
+            cursor: pointer;
         }
-        nav a:hover {
+        nav button:hover {
             text-decoration: underline;
+        }
+        nav i {
+            margin-right: 5px;
         }
         .hidden {
             display: none;
@@ -92,8 +98,9 @@
 </head>
 <body>
     <nav>
-        <a href="#frete" onclick="mostrarSeção('frete-container')">Frete x Faturado</a>
-        <a href="#vida-util" onclick="mostrarSeção('vida-util-container')">Vida Útil do Produto</a>
+        <button onclick="mostrarSeção('frete-container')"><i>🚚</i> Frete x Faturado</button>
+        <button onclick="mostrarSeção('vida-util-container')"><i>📅</i> Vida Útil do Produto</button>
+        <button onclick="mostrarSeção('desconto-container')"><i>💸</i> Cálculo de Desconto</button>
     </nav>
 
     <div id="frete-container" class="container">
@@ -122,6 +129,26 @@
             <button type="button" onclick="calcularVidaUtil()">Calcular</button>
         </form>
         <div class="result" id="resultado-vida-util"></div>
+    </div>
+
+    <div id="desconto-container" class="container hidden">
+        <h1>Cálculo de Desconto</h1>
+        <form id="desconto-form">
+            <label for="valorProdutos">Valor Total dos Produtos (R$):</label>
+            <input type="number" id="valorProdutos" placeholder="Digite o valor total dos produtos" required>
+
+            <label for="valorNota">Valor Total da Nota Fiscal (R$):</label>
+            <input type="number" id="valorNota" placeholder="Digite o valor total da nota fiscal" required>
+
+            <label for="precoUnitario">Preço Unitário (R$):</label>
+            <input type="number" id="precoUnitario" placeholder="Digite o preço unitário" required>
+
+            <label for="litragem">Litragem:</label>
+            <input type="number" id="litragem" placeholder="Digite a litragem" required>
+
+            <button type="button" onclick="calcularDesconto()">Calcular</button>
+        </form>
+        <div class="result" id="resultado-desconto"></div>
     </div>
 
     <script>
@@ -168,12 +195,31 @@
 
             const totalDias = (dataVencimento - dataFabricacao) / (1000 * 60 * 60 * 24);
             const diasRestantes = (dataVencimento - dataAtual) / (1000 * 60 * 60 * 24);
-            const percentualVidaUtil = (diasRestantes / totalDias) * 100;
+            const percentualVidaUtil = ((totalDias - diasRestantes) / totalDias) * 100;
 
             const resultado = `Percentual de Vida Útil: ${percentualVidaUtil.toFixed(2).replace('.', ',')}%<br>` +
                               `Dias Restantes para Vencimento: ${Math.max(0, Math.ceil(diasRestantes))} dias`;
 
             document.getElementById('resultado-vida-util').innerHTML = resultado;
+        }
+
+        function calcularDesconto() {
+            const valorProdutos = parseFloat(document.getElementById('valorProdutos').value);
+            const valorNota = parseFloat(document.getElementById('valorNota').value);
+            const precoUnitario = parseFloat(document.getElementById('precoUnitario').value);
+            const litragem = parseFloat(document.getElementById('litragem').value);
+
+            if (isNaN(valorProdutos) || isNaN(valorNota) || isNaN(precoUnitario) || isNaN(litragem) || valorProdutos <= 0) {
+                document.getElementById('resultado-desconto').textContent = 'Por favor, insira valores válidos!';
+                return;
+            }
+
+            const descontoPercentual = ((valorProdutos - valorNota) / valorProdutos) * 100;
+            const reducaoUnitaria = (descontoPercentual * precoUnitario) / 100;
+            const precoComDesconto = precoUnitario - reducaoUnitaria;
+            const resultadoFinal = precoComDesconto * litragem;
+
+            document.getElementById('resultado-desconto').textContent = `Resultado Final: R$ ${resultadoFinal.toFixed(2).replace('.', ',')}`;
         }
 
         function mostrarSeção(id) {
