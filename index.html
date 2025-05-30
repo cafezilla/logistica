@@ -143,7 +143,8 @@
             <label for="precoUnitario">Preço Unitário (R$):</label>
             <input type="number" id="precoUnitario" placeholder="Digite o preço unitário" required>
 
-            <label for="litragem">Litragem:</label>
+            <label for="litragem">Por quantos litros:</label>
+           <label for="litragem">(o valor unitario é por quantos litros?)</label>
             <input type="number" id="litragem" placeholder="Digite a litragem" required>
 
             <button type="button" onclick="calcularDesconto()">Calcular</button>
@@ -184,24 +185,33 @@
         }
 
         function calcularVidaUtil() {
-            const dataFabricacao = new Date(document.getElementById('dataFabricacao').value);
-            const dataVencimento = new Date(document.getElementById('dataVencimento').value);
-            const dataAtual = new Date();
+    const dataFabricacao = new Date(document.getElementById('dataFabricacao').value);
+    const dataVencimento = new Date(document.getElementById('dataVencimento').value);
+    const dataAtual = new Date();
 
-            if (isNaN(dataFabricacao) || isNaN(dataVencimento) || dataFabricacao >= dataVencimento) {
-                document.getElementById('resultado-vida-util').textContent = 'Por favor, insira datas válidas!';
-                return;
-            }
+    if (isNaN(dataFabricacao) || isNaN(dataVencimento) || dataFabricacao >= dataVencimento) {
+        document.getElementById('resultado-vida-util').textContent = 'Por favor, insira datas válidas!';
+        return;
+    }
 
-            const totalDias = (dataVencimento - dataFabricacao) / (1000 * 60 * 60 * 24);
-            const diasRestantes = (dataVencimento - dataAtual) / (1000 * 60 * 60 * 24);
-            const percentualVidaUtil = ((diasRestantes / totalDias) * 100).toFixed(2);
+    const totalDias = (dataVencimento - dataFabricacao) / (1000 * 60 * 60 * 24);
+    const diasRestantes = (dataVencimento - dataAtual) / (1000 * 60 * 60 * 24);
+    const percentualVidaUtil = ((diasRestantes / totalDias) * 100);
 
-            const resultado = `Percentual de Vida Útil: ${percentualVidaUtil.replace('.', ',')}%<br>` +
-                              `Dias Restantes para Vencimento: ${Math.max(0, Math.ceil(diasRestantes))} dias`;
+    let politicaMsg = '';
 
-            document.getElementById('resultado-vida-util').innerHTML = resultado;
-        }
+    if (percentualVidaUtil < 80 && diasRestantes < 730) {
+        politicaMsg = '<br><span style="color: red;">⚠️ PRODUTO FORA DA POLÍTICA, SOLICITAR APROVAÇÃO NO APP!!!</span>';
+    } else {
+        politicaMsg = '<br><span style="color: green;">✅ PRODUTO DENTRO DA POLÍTICA</span>';
+    }
+
+    const resultado = `Percentual de Vida Útil: ${percentualVidaUtil.toFixed(2).replace('.', ',')}%<br>` +
+                      `Dias Restantes para Vencimento: ${Math.max(0, Math.ceil(diasRestantes))} dias` +
+                      politicaMsg;
+
+    document.getElementById('resultado-vida-util').innerHTML = resultado;
+}
 
         function calcularDesconto() {
             const valorProdutos = parseFloat(document.getElementById('valorProdutos').value);
