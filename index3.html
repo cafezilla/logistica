@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cálculos Diversos</title>
+  <!-- Google Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      color: #333;
+      display: flex;
+    }
+
+    /* ===== MENU LATERAL ===== */
+    nav {
+      width: 220px;
+      background: #145a32;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      padding-top: 20px;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+    }
+    nav button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      text-align: left;
+      transition: background 0.3s;
+    }
+    nav button:hover {
+      background: #1e7c4a;
+    }
+    nav .material-icons {
+      font-size: 20px;
+      color: #f1c40f; /* dourado */
+    }
+
+    /* ===== CONTEÚDO PRINCIPAL ===== */
+    .main {
+      flex: 1;
+      padding: 20px;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 600px;
+      margin: 20px auto;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.6em;
+      margin-bottom: 25px;
+      color: #145a32;
+    }
+
+    label {
+      font-size: 0.9em;
+      margin-bottom: 5px;
+      display: block;
+      font-weight: bold;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1em;
+      background: #fafafa;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+    input:focus {
+      outline: 2px solid #27ae60;
+    }
+
+    button.calc {
+      width: 100%;
+      padding: 14px;
+      background: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      margin-bottom: 15px;
+    }
+    button.calc:hover {
+      background: #219150;
+      transform: scale(1.02);
+    }
+    
+    button.toggle-form {
+      width: 100%;
+      padding: 10px;
+      background: #f1c40f;
+      color: #333;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9em;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+
+    /* ===== CARDS RESULTADO ===== */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 25px;
+    }
+    .card {
+      background: #fdfdfd;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+      font-weight: bold;
+      transition: transform 0.2s, background 0.3s;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      background: #f8f9f6;
+    }
+    .card h3 {
+      margin: 0;
+      font-size: 0.9em;
+      color: #145a32;
+    }
+    .card p {
+      margin: 8px 0 0;
+      font-size: 1.2em;
+      color: #333;
+    }
+
+    .hidden { 
+      display: none; 
+    }
+    
+    .collapsed {
+      max-height: 0;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      opacity: 0;
+    }
+    
+    .form-container {
+      transition: all 0.5s ease;
+      overflow: hidden;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Estilos para mensagens de política */
+    .politica-msg {
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+      grid-column: span 3;
+    }
+    .politica-fora {
+      background-color: #ffebee;
+      color: #c62828;
+      border: 1px solid #ef9a9a;
+    }
+    .politica-dentro {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #a5d6a7;
+    }
+    
+    .section-title {
+      text-align: center;
+      font-size: 1.2em;
+      margin: 20px 0 10px;
+      color: #145a32;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #f1c40f;
+      grid-column: span 3;
+    }
+  </style>
+</head>
+<body>
+  <!-- MENU LATERAL -->
+  <nav>
+    <button onclick="mostrarSeção('frete-container')">
+      <span class="material-icons">local_shipping</span> Frete x Faturado
+    </button>
+    <button onclick="mostrarSeção('vida-util-container')">
+      <span class="material-icons">calendar_today</span> Vida Útil
+    </button>
+    <button onclick="mostrarSeção('desconto-container')">
+      <span class="material-icons">sell</span> Desconto
+    </button>
+  </nav>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <div class="main">
+    <!-- FRETE -->
+    <div id="frete-container" class="container">
+      <h1>Cálculo de Frete x Faturado</h1>
+      <div id="frete-form-container" class="form-container">
+        <form id="calculo-form">
+          <label for="frete">Valor do Frete (R$):</label>
+          <input type="text" id="frete" required>
+
+          <label for="valorTotal">Valor Total da NF (R$):</label>
+          <input type="text" id="valorTotal" required>
+
+          <label for="kms">KM Rodados:</label>
+          <input type="number" id="kms" required>
+
+          <label for="peso">Peso da Carga (kg):</label>
+          <input type="number" id="peso" step="0.01" required>
+
+          <button type="button" class="calc" onclick="calcularFrete()">Calcular</button>
+        </form>
+      </div>
+      <button id="toggle-frete-form" class="toggle-form hidden" onclick="toggleForm('frete')">Mostrar Campos</button>
+      <div id="resultado"></div>
+    </div>
+
+    <!-- VIDA ÚTIL -->
+    <div id="vida-util-container" class="container hidden">
+      <h1>Vida Útil do Produto</h1>
+      <div id="vida-util-form-container" class="form-container">
+        <form id="vida-util-form">
+          <label for="dataFabricacao">Data de Fabricação:</label>
+          <input type="date" id="dataFabricacao" required>
+
+          <label for="dataVencimento">Data de Vencimento:</label>
+          <input type="date" id="dataVencimento" required>
+
+          <button type="button" class="calc" onclick="calcularVidaUtil()">Calcular</button>
+        </form>
+      </div>
+      <button id="toggle-vida-util-form" class="toggle-form hidden" onclick="toggleForm('vida-util')">Mostrar Campos</button>
+      <div id="resultado-vida-util"></div>
+    </div>
+
+    <!-- DESCONTO -->
+    <div id="desconto-container" class="container hidden">
+      <h1>Cálculo de Desconto</h1>
+      <div id="desconto-form-container" class="form-container">
+        <form id="desconto-form">
+          <label for="valorProdutos">Valor Total dos Produtos (R$):</label>
+          <input type="number" id="valorProdutos" placeholder="Digite o valor total dos produtos" required>
+
+          <label for="valorNota">Valor Total da Nota Fiscal (R$):</label>
+          <input type="number" id="valorNota" placeholder="Digite o valor total da nota fiscal" required>
+
+          <label for="precoUnitario">Preço Unitário (R$):</label>
+          <input type="number" id="precoUnitario" placeholder="Digite o preço unitário" required>
+
+          <label for="litragem">Por quantos litros:</label>
+          <input type="number" id="litragem" placeholder="Digite a litragem" required>
+
+          <button type="button" class="calc" onclick="calcularDesconto()">Calcular</button>
+        </form>
+      </div>
+      <button id="toggle-desconto-form" class="toggle-form hidden" onclick="toggleForm('desconto')">Mostrar Campos</button>
+      <div id="resultado-desconto"></div>
+    </div>
+  </div>
+
+  <script>
+    function formatarNumero(valor) {
+      return valor.replace(/\D/g, '')
+                  .replace(/(\d)(\d{2})$/, '$1,$2')
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+    
+    function removerFormatacao(valor) {
+      return parseFloat(valor.replace(/\./g, '').replace(/,/g, '.')) || 0;
+    }
+
+    document.getElementById('frete').addEventListener('input', function() {
+      this.value = formatarNumero(this.value);
+    });
+    
+    document.getElementById('valorTotal').addEventListener('input', function() {
+      this.value = formatarNumero(this.value);
+    });
+
+    // Recolher formulário
+    function collapseForm(formType) {
+      const formContainer = document.getElementById(`${formType}-form-container`);
+      const toggleButton = document.getElementById(`toggle-${formType}-form`);
+      
+      formContainer.classList.add('collapsed');
+      toggleButton.classList.remove('hidden');
+    }
+    
+    // Expandir formulário
+    function toggleForm(formType) {
+      const formContainer = document.getElementById(`${formType}-form-container`);
+      const toggleButton = document.getElementById(`toggle-${formType}-form`);
+      
+      if (formContainer.classList.contains('collapsed')) {
+        formContainer.classList.remove('collapsed');
+        toggleButton.textContent = 'Ocultar Campos';
+      } else {
+        formContainer.classList.add('collapsed');
+        toggleButton.textContent = 'Mostrar Campos';
+      }
+    }
+
+    // FRETE
+    function calcularFrete() {
+      const frete = removerFormatacao(document.getElementById('frete').value);
+      const valorTotal = removerFormatacao(document.getElementById('valorTotal').value);
+      const kms = parseFloat(document.getElementById('kms').value);
+      const pesoKg = parseFloat(document.getElementById('peso').value);
+
+      if (valorTotal === 0 || isNaN(kms) || isNaN(pesoKg) || kms <= 0 || pesoKg <= 0) {
+        document.getElementById('resultado').innerHTML = '<p style="color:#e74c3c;">Preencha todos os campos corretamente!</p>';
+        return;
+      }
+
+      const pesoTon = pesoKg / 1000;
+      const percentual = (frete / valorTotal) * 100;
+      const fretePorKm = frete / kms;
+      const fretePorTonelada = frete / pesoTon;
+
+      // Recolher o formulário após o cálculo
+      collapseForm('frete');
+
+      document.getElementById('resultado').innerHTML = `
+        <div class="section-title">Dados Informados</div>
+        <div class="cards">
+          <div class="card">
+            <h3>Valor da Nota</h3>
+            <p>R$ ${valorTotal.toFixed(2).replace('.', ',')}</p>
+          </div>
+          <div class="card">
+            <h3>Peso da Carga</h3>
+            <p>${pesoKg.toFixed(2).replace('.', ',')} kg</p>
+          </div>
+          <div class="card">
+            <h3>KM Rodados</h3>
+            <p>${kms.toFixed(0)} km</p>
+          </div>
+        </div>
+        
+        <div class="section-title">Resultados do Cálculo</div>
+        <div class="cards">
+          <div class="card">
+            <h3>Valor do Frete</h3>
+            <p>R$ ${frete.toFixed(2).replace('.', ',')}</p>
+          </div>
+          <div class="card">
+            <h3>Percentual</h3>
+            <p>${percentual.toFixed(2).replace('.', ',')}%</p>
+          </div>
+          <div class="card">
+            <h3>Frete por KM</h3>
+            <p>R$ ${fretePorKm.toFixed(2).replace('.', ',')}</p>
+          </div>
+          <div class="card">
+            <h3>Frete por Tonelada</h3>
+            <p>R$ ${fretePorTonelada.toFixed(2).replace('.', ',')}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    // VIDA ÚTIL
+    function calcularVidaUtil() {
+      const dataFabricacao = new Date(document.getElementById('dataFabricacao').value);
+      const dataVencimento = new Date(document.getElementById('dataVencimento').value);
+      const dataAtual = new Date();
+
+      if (isNaN(dataFabricacao) || isNaN(dataVencimento) || dataFabricacao >= dataVencimento) {
+        document.getElementById('resultado-vida-util').innerHTML = '<p style="color:#e74c3c;">Por favor, insira datas válidas!</p>';
+        return;
+      }
+
+      const totalDias = (dataVencimento - dataFabricacao) / (1000 * 60 * 60 * 24);
+      const diasRestantes = (dataVencimento - dataAtual) / (1000 * 60 * 60 * 24);
+      const percentualVidaUtil = ((diasRestantes / totalDias) * 100);
+
+      let politicaMsg = '';
+      let politicaClass = '';
+
+      if (percentualVidaUtil < 80 && diasRestantes < 730) {
+        politicaMsg = '⚠️ PRODUTO FORA DA POLÍTICA, SOLICITAR APROVAÇÃO NO APP!!!';
+        politicaClass = 'politica-msg politica-fora';
+      } else {
+        politicaMsg = '✅ PRODUTO DENTRO DA POLÍTICA';
+        politicaClass = 'politica-msg politica-dentro';
+      }
+
+      // Recolher o formulário após o cálculo
+      collapseForm('vida-util');
+
+      document.getElementById('resultado-vida-util').innerHTML = `
+        <div class="section-title">Dados Informados</div>
+        <div class="cards">
+          <div class="card">
+            <h3>Data de Fabricação</h3>
+            <p>${dataFabricacao.toLocaleDateString('pt-BR')}</p>
+          </div>
+          <div class="card">
+            <h3>Data de Vencimento</h3>
+            <p>${dataVencimento.toLocaleDateString('pt-BR')}</p>
+          </div>
+          <div class="card">
+            <h3>Data de Hoje</h3>
+            <p>${dataAtual.toLocaleDateString('pt-BR')}</p>
+          </div>
+        </div>
+        
+        <div class="section-title">Resultados do Cálculo</div>
+        <div class="cards">
+          <div class="card">
+            <h3>Percentual de Vida Útil</h3>
+            <p>${percentualVidaUtil.toFixed(2).replace('.', ',')}%</p>
+          </div>
+          <div class="card">
+            <h3>Dias Restantes</h3>
+            <p>${Math.max(0, Math.ceil(diasRestantes))} dias</p>
+          </div>
+        </div>
+        <div class="${politicaClass}">${politicaMsg}</div>
+      `;
+    }
+
+    // DESCONTO
+    function calcularDesconto() {
+      const valorProdutos = parseFloat(document.getElementById('valorProdutos').value);
+      const valorNota = parseFloat(document.getElementById('valorNota').value);
+      const precoUnitario = parseFloat(document.getElementById('precoUnitario').value);
+      const litragem = parseFloat(document.getElementById('litragem').value);
+
+      if (isNaN(valorProdutos) || isNaN(valorNota) || isNaN(precoUnitario) || isNaN(litragem) || valorProdutos <= 0) {
+        document.getElementById('resultado-desconto').innerHTML = '<p style="color:#e74c3c;">Por favor, insira valores válidos!</p>';
+        return;
+      }
+
+      const descontoPercentual = ((valorProdutos - valorNota) / valorProdutos) * 100;
+      const reducaoUnitaria = (descontoPercentual * precoUnitario) / 100;
+      const precoComDesconto = precoUnitario - reducaoUnitaria;
+      const resultadoFinal = precoComDesconto * litragem;
+
+      // Recolher o formulário após o cálculo
+      collapseForm('desconto');
+
+      document.getElementById('resultado-desconto').innerHTML = `
+        <div class="section-title">Dados Informados</div>
+        <div class="cards">
+          <div class="card">
+            <h3>Valor dos Produtos</h3>
+            <p>R$ ${valorProdutos.toFixed(2).replace('.', ',')}</p>
+          </div>
+          <div class="card">
+            <h3>Valor da Nota</h3>
+            <p>R$ ${valorNota.toFixed(2).replace('.', ',')}</p>
+          </div>
+          <div class="card">
+            <h3>Preço Unitário</h3>
+            <p>R$ ${precoUnitario.toFixed(2).replace('.', ',')}</p>
+          </div>
+          <div class="card">
+            <h3>Litragem</h3>
+            <p>${litragem} L</p>
+          </div>
+        </div>
+        
+        <div class="section-title">Resultados do Cálculo</div>
+        <div class="cards">
+          <div class="card">
+            <h3>Desconto Aplicado</h3>
+            <p>${descontoPercentual.toFixed(2).replace('.', ',')}%</p>
+          </div>
+          <div class="card">
+            <h3>Preço Unitário c/ Desconto</h3>
+            <p>R$ ${precoComDesconto.toFixed(2).replace('.', ',')}</p>
+          </div>
+          <div class="card">
+            <h3>Valor Final</h3>
+            <p>R$ ${resultadoFinal.toFixed(2).replace('.', ',')}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    // MOSTRAR SEÇÃO
+    function mostrarSeção(id) {
+      document.querySelectorAll('.container').forEach(container => {
+        container.classList.add('hidden');
+      });
+      document.getElementById(id).classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
